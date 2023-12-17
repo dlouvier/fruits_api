@@ -23,7 +23,8 @@ test:
 
 # Run the webserver (without building)
 run:
-	@cd ./src && $(GORUN)
+	@trap 'echo "SIGTERM received, stopping..."; kill $$!; exit' INT; \
+	cd ./src && $(GORUN) & wait
 
 # Generate docs & prepare swagger UI
 generate-docs:
