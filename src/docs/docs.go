@@ -102,15 +102,14 @@ const docTemplate = `{
             "properties": {
                 "color": {
                     "type": "string",
-                    "example": "Red"
+                    "example": "red"
                 },
                 "fruit": {
                     "type": "string",
-                    "example": "Apple"
+                    "example": "apple"
                 },
                 "id": {
-                    "type": "string",
-                    "example": "rKdzQ4"
+                    "type": "string"
                 }
             }
         }

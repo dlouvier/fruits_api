@@ -2,13 +2,12 @@ definitions:
   main.Fruit:
     properties:
       color:
-        example: Red
+        example: red
         type: string
       fruit:
-        example: Apple
+        example: apple
         type: string
       id:
-        example: rKdzQ4
         type: string
     type: object
 info:

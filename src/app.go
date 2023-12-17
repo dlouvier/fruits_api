@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
-	"sync"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,10 +20,12 @@ import (
 	_ "github.com/dlouvier/fruits-api/src/docs"
 )
 
+var dataFilename = "./fruits-api-data.json"
+
 type Fruit struct {
-	Id    string `json:"id" example:"rKdzQ4"`
-	Fruit string `json:"fruit" example:"Apple"`
-	Color string `json:"color" example:"Red"`
+	Id    string `json:"id"`
+	Fruit string `json:"fruit" example:"apple"`
+	Color string `json:"color" example:"red"`
 }
 
 type FruitsApi struct {
@@ -119,26 +125,77 @@ func New(app *fiber.App, data map[string]Fruit) *FruitsApi {
 	return fa
 }
 
-func main() {
-	data := map[string]Fruit{}
-	fruitsApi := New(fiber.New(), data)
-	fruitsApi.app.Listen(":3000")
+func Save(data map[string]Fruit) {
+	if len(data) > 0 {
+		var buf bytes.Buffer
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+		encoder := json.NewEncoder(&buf)
+		encoder.SetIndent("", "  ")
+		encoder.SetEscapeHTML(false)
 
-	var serverShutdown sync.WaitGroup
+		err := encoder.Encode(data)
+		if err != nil {
+			log.Panic("Error encoding object")
+		}
 
-	go func() {
-		fmt.Println("Gracefully shutting down...")
-		serverShutdown.Add(1)
-		defer serverShutdown.Done()
-		_ = fruitsApi.app.ShutdownWithTimeout(60 * time.Second)
-	}()
+		file, _ := os.Create(dataFilename)
+		err = os.WriteFile(file.Name(), buf.Bytes(), 0600)
+		if err != nil {
+			log.Panic("Error writing file")
+		}
 
-	if err := fruitsApi.app.Listen(":3000"); err != nil {
-		log.Panic(err)
+		log.Printf("Data saved to file '%s'", dataFilename)
+		log.Printf("Saved data contains %d fruits", len(data))
+	} else {
+		log.Println("There were not fruits in the API. Not creating file")
 	}
 
-	serverShutdown.Wait()
+}
+
+func Load() map[string]Fruit {
+	file, err := os.Open(dataFilename)
+	if err != nil {
+		if strings.Contains(err.Error(), "no such file or directory") {
+			log.Println("Not found file with data")
+			return map[string]Fruit{}
+		} else {
+			log.Panicln("Error opening file:", err)
+		}
+	}
+	defer file.Close()
+
+	byte, _ := io.ReadAll(file)
+
+	data := map[string]Fruit{}
+	err = json.Unmarshal(byte, &data)
+	if err != nil {
+		log.Panicln("Error opening file:", err)
+	}
+
+	return data
+}
+
+func main() {
+	data := Load()
+	fruitsApi := New(fiber.New(), data)
+
+	go func() {
+		if err := fruitsApi.app.Listen(":3000"); err != nil {
+			log.Println(err)
+			log.Panic("Fiber failed to start")
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	<-c
+
+	log.Println("\nGracefully shutting down...")
+	_ = fruitsApi.app.Shutdown()
+
+	log.Println("Server shutdown")
+	time.Sleep(2 * time.Second)
+
+	Save(fruitsApi.data)
 }
