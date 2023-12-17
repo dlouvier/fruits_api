@@ -1,0 +1,107 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/fruits": {
+            "post": {
+                "description": "If the Payload doesn't contain an ID, it will generate it and also it doesn't validate if fields are empty or not. If the ID already exists, it will return an error.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Add a fruit",
+                "parameters": [
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.Fruit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/fruits/": {
+            "get": {
+                "description": "Get the list of all fruits",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get the list of all fruits",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/main.Fruit"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/fruits/{id}": {
+            "get": {
+                "description": "Get a fruit by its Id",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a fruit by its Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fruit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Fruit"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.Fruit": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "example": "Red"
+                },
+                "fruit": {
+                    "type": "string",
+                    "example": "Apple"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "rKdzQ4"
+                }
+            }
+        }
+    }
+}

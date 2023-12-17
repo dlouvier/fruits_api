@@ -1,0 +1,71 @@
+definitions:
+  main.Fruit:
+    properties:
+      color:
+        example: Red
+        type: string
+      fruit:
+        example: Apple
+        type: string
+      id:
+        example: rKdzQ4
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/fruits:
+    post:
+      consumes:
+      - application/json
+      description: If the Payload doesn't contain an ID, it will generate it and also
+        it doesn't validate if fields are empty or not. If the ID already exists,
+        it will return an error.
+      parameters:
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.Fruit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Add a fruit
+  /api/fruits/:
+    get:
+      description: Get the list of all fruits
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Fruit'
+            type: array
+      summary: Get the list of all fruits
+  /api/fruits/{id}:
+    get:
+      description: Get a fruit by its Id
+      parameters:
+      - description: Fruit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Fruit'
+        "404":
+          description: Not Found
+      summary: Get a fruit by its Id
+swagger: "2.0"
