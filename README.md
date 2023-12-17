@@ -1,3 +1,5 @@
+![fruits-api](https://github.com/dlouvier/fruits-api/assets/13359249/072a2baa-e4e0-4e64-9edf-7f419318a2dc)
+
 # Fruits API
 This is a simple Fruits API service that offers three endpoints, as described below.
 
