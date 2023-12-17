@@ -80,7 +80,7 @@ func (fa *FruitsApi) returnOne(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param request body main.Fruit true "query params"
-// @Success 200 {string} main.FruitsJson.Id
+// @Success 200 {string} main.Fruit.Id
 // @Router /api/fruits [post]
 func (fa *FruitsApi) addFruit(c *fiber.Ctx) error {
 	newFruit := Fruit{}
@@ -107,6 +107,51 @@ func (fa *FruitsApi) addFruit(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusInternalServerError).SendString("ID is duplicated, try again")
 }
 
+// @Summary Search a fruit
+// @Description Search for a fruit based in a Payload
+// @Accept json
+// @Produce json
+// @Param request body main.Fruit true "query params"
+// @Success 200 {object} []main.Fruit
+// @Failure 204
+// @Router /api/fruits/search [post]
+func (fa *FruitsApi) searchFruit(c *fiber.Ctx) error {
+	searchFruit := Fruit{}
+	if err := c.BodyParser(&searchFruit); err != nil {
+		return err
+	}
+
+	results := []Fruit{}
+
+	if len(searchFruit.Id) > 0 {
+		if fruit, exists := fa.data[searchFruit.Id]; exists {
+			results = append(results, fruit)
+		}
+	}
+
+	if len(searchFruit.Color) > 0 {
+		for _, f := range fa.data {
+			if strings.EqualFold(f.Color, searchFruit.Color) {
+				results = append(results, f)
+			}
+		}
+	}
+
+	if len(searchFruit.Fruit) > 0 {
+		for _, f := range fa.data {
+			if strings.EqualFold(f.Fruit, searchFruit.Fruit) {
+				results = append(results, f)
+			}
+		}
+	}
+
+	if len(results) > 0 {
+		return c.Status(fiber.StatusOK).JSON(results)
+	} else {
+		return c.SendStatus(fiber.StatusNoContent)
+	}
+}
+
 func New(app *fiber.App, data map[string]Fruit) *FruitsApi {
 	fa := &FruitsApi{
 		app:  app,
@@ -118,6 +163,7 @@ func New(app *fiber.App, data map[string]Fruit) *FruitsApi {
 	apiFruits.Get("/", fa.returnAll)
 	apiFruits.Get("/:id", fa.returnOne)
 	apiFruits.Post("/", fa.addFruit)
+	apiFruits.Post("/search", fa.searchFruit)
 
 	// swagger
 	app.Get("/swagger/*", swagger.HandlerDefault) // default

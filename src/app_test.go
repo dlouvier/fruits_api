@@ -115,4 +115,83 @@ func TestFruitsApi(t *testing.T) {
 		})
 
 	})
+
+	t.Run("should return results from search", func(t *testing.T) {
+		data := map[string]Fruit{
+			"CvNlZ0F3": {"CvNlZ0F3", "apple", "red"},
+			"h29Z90Oa": {"h29Z90Oa", "apple", "Green"},
+			"yJwk2_z":  {"yJwk2_z", "watermelon", "green"},
+			"Ki2-xd":   {"Ki2-xd", "banana", "yellow"},
+		}
+		fruitsApi := New(fiber.New(), data)
+
+		t.Run("should return all fruits with green color", func(t *testing.T) {
+			jsonData, _ := json.Marshal(Fruit{"", "", "green"})
+
+			r := httptest.NewRequest("POST", "/api/fruits/search", bytes.NewBuffer(jsonData))
+			r.Header.Set("Content-Type", "application/json")
+
+			resp, _ := fruitsApi.app.Test(r)
+			body, err := io.ReadAll(resp.Body)
+			assert.NoError(t, err)
+
+			expected := []Fruit{{"h29Z90Oa", "apple", "Green"}, {"yJwk2_z", "watermelon", "green"}}
+			actual := []Fruit{}
+			if assert.NoError(t, json.Unmarshal(body, &actual)) {
+				assert.Contains(t, actual, expected[0])
+				assert.Contains(t, actual, expected[1])
+			}
+
+		})
+
+		t.Run("should return all fruits apple", func(t *testing.T) {
+			jsonData, _ := json.Marshal(Fruit{"", "Apple", ""})
+
+			r := httptest.NewRequest("POST", "/api/fruits/search", bytes.NewBuffer(jsonData))
+			r.Header.Set("Content-Type", "application/json")
+
+			resp, _ := fruitsApi.app.Test(r)
+			body, err := io.ReadAll(resp.Body)
+			assert.NoError(t, err)
+
+			expected := []Fruit{{"CvNlZ0F3", "apple", "red"}, {"h29Z90Oa", "apple", "Green"}}
+			actual := []Fruit{}
+			if assert.NoError(t, json.Unmarshal(body, &actual)) {
+				assert.Equal(t, 200, resp.StatusCode)
+				assert.Contains(t, actual, expected[0])
+				assert.Contains(t, actual, expected[1])
+			}
+
+		})
+
+		t.Run("should return fruit with ID Ki2-xd and color red", func(t *testing.T) {
+			jsonData, _ := json.Marshal(Fruit{"Ki2-xd", "", "red"})
+
+			r := httptest.NewRequest("POST", "/api/fruits/search", bytes.NewBuffer(jsonData))
+			r.Header.Set("Content-Type", "application/json")
+
+			resp, _ := fruitsApi.app.Test(r)
+			body, err := io.ReadAll(resp.Body)
+			assert.NoError(t, err)
+
+			expected := []Fruit{{"Ki2-xd", "banana", "yellow"}, {"CvNlZ0F3", "apple", "red"}}
+			actual := []Fruit{}
+			if assert.NoError(t, json.Unmarshal(body, &actual)) {
+				assert.Equal(t, 200, resp.StatusCode)
+				assert.Contains(t, actual, expected[0])
+				assert.Contains(t, actual, expected[1])
+			}
+		})
+
+		t.Run("should return status 204 no content", func(t *testing.T) {
+			jsonData, _ := json.Marshal(Fruit{"", "", "orange"})
+
+			r := httptest.NewRequest("POST", "/api/fruits/search", bytes.NewBuffer(jsonData))
+			r.Header.Set("Content-Type", "application/json")
+
+			resp, _ := fruitsApi.app.Test(r)
+			assert.Equal(t, fiber.StatusNoContent, resp.StatusCode)
+		})
+
+	})
 }
