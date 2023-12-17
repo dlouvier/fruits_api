@@ -1,11 +1,12 @@
-# Fruits API
+![fruits-api](https://github.com/dlouvier/fruits-api/assets/13359249/072a2baa-e4e0-4e64-9edf-7f419318a2dc)
 
-This is a simple Fruits API service with three endpoints, as described below.
+# Fruits API
+This is a simple Fruits API service that offers three endpoints, as described below.
 
 ## Endpoints
-
 1. Return all fruits in JSON format:
-
+   `GET /api/fruits/` Get the list of all fruits
+   
    ```json
    [{
    "id": <ID>,
@@ -14,31 +15,22 @@ This is a simple Fruits API service with three endpoints, as described below.
    }]
    ```
 
-1. Return a specific fruit in JSON format.
+1. Return a specific fruit in JSON format
+   `GET /api/fruits/{id}` Get a fruit by its Id
 
-1. Add a fruit to the basket by sending a JSON payload.
+1. Add a fruit to the basket by sending a JSON payload
+   `POST /api/fruits` Add a fruit
 
-## Data Storage
+The complete API documentation & client examples is available in http://localhost:3000/swagger
 
-Data is persistent across requests.
-
-## Documentation
-
-### Requirements
-
+## Requirements
 To build the project
 
 - Makefile
 - Golang (1.21.5)
 
-#### API Documentation
-
-The API documentation is available in the Swagger UI
-
-[localhost:3000/swagger](http://localhost:3000/swagger)
-
-#### Run tests
-
+## How to run
+### Run tests
 `make test`
 
 Example:
@@ -86,8 +78,7 @@ ok      github.com/dlouvier/fruits-api/src      0.006s  coverage: 58.3% of state
 
 ```
 
-#### Starts the API (requires golang installed)
-
+### Run the API (requires golang installed)
 `make run`
 
 ```shell
