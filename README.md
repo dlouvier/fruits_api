@@ -1,7 +1,7 @@
 ![fruits-api](https://github.com/dlouvier/fruits-api/assets/13359249/072a2baa-e4e0-4e64-9edf-7f419318a2dc)
 
 # Fruits API
-This is a simple Fruits API service that offers three endpoints, as described below.
+This is a simple Fruits API service that offers four endpoints, as described below.
 
 ## Endpoints
 1. Return all fruits in JSON format:
@@ -47,7 +47,7 @@ To build the project
 
 ### Docker
 To run the API using Docker, execute the following command:
-`docker run -p 3000:3000 ghcr.io/dlouvier/fruits_api:v0.4.0`
+`docker run -p 3000:3000 ghcr.io/dlouvier/fruits_api:v0.6.0`
 
 Note:
 - You must first authenticate with the GitHub Container Registry using docker login ghcr.io.
