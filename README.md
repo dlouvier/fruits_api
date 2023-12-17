@@ -5,6 +5,7 @@ This is a simple Fruits API service that offers three endpoints, as described be
 
 ## Endpoints
 1. Return all fruits in JSON format:
+
    `GET /api/fruits/` Get the list of all fruits
    
    ```json
@@ -16,80 +17,55 @@ This is a simple Fruits API service that offers three endpoints, as described be
    ```
 
 1. Return a specific fruit in JSON format
+
    `GET /api/fruits/{id}` Get a fruit by its Id
 
-1. Add a fruit to the basket by sending a JSON payload
-   `POST /api/fruits` Add a fruit
+1. Add a fruit to the basket by sending a JSON payload 
 
-The complete API documentation & client examples is available in http://localhost:3000/swagger
+   `POST /api/fruits`
+
+   with a Payload like: `{"fruit": "banana", "color": "yellow"}`
+
+1. Search a fruit(s) providing a payload
+
+   `POST /api/fruits/search`
+
+   with a Payload like: `{"color": "yellow"}` should return all the fruits which matches the color yellow.
+
+The complete API documentation & client examples are available in [localhost:3000/swagger](http://localhost:3000/swagger)
 
 ## Requirements
 To build the project
 
 - Makefile
-- Golang (1.21.5)
+- Golang (v1.21.5)
 
-## How to run
-### Run tests
-`make test`
+## How to start the API locally
+- Before of anything, ensure the port `3000` is free in your host (`ss -snltp | grep ':3000'`)
+- Please also notice: **I only tested in x86_64/Linux** so the docker image & binary built might not run. In that case install `golang 1.21.5` and `make run`
+- If during the use of the API any fruit is added, it will be store in a local file. This file will be automatically read the next time it starts.
 
-Example:
+### Docker
+To run the API using Docker, execute the following command:
+`docker run -p 3000:3000 ghcr.io/dlouvier/fruits_api:v0.4.0`
 
-```shell
-fruits-api git:(main) make test
-?       github.com/dlouvier/fruits-api/src/docs [no test files]
-=== RUN   TestFruitsApi
-=== RUN   TestFruitsApi/should_return_all_fruits_in_JSON_format
-=== RUN   TestFruitsApi/should_return_a_specific_fruit_in_JSON_format
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_1
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_2
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/should_return_contain_both_fruits
---- PASS: TestFruitsApi (0.00s)
-    --- PASS: TestFruitsApi/should_return_all_fruits_in_JSON_format (0.00s)
-    --- PASS: TestFruitsApi/should_return_a_specific_fruit_in_JSON_format (0.00s)
-    --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_1 (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_2 (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/should_return_contain_both_fruits (0.00s)
-PASS
-coverage: 58.3% of statements
-ok      github.com/dlouvier/fruits-api/src      0.006s  coverage: 58.3% of statements
+Note:
+- You must first authenticate with the GitHub Container Registry using docker login ghcr.io.
+- Persistence of the objects is not guaranteed if the container is removed. To preserve the data, you can use docker commit.
 
-  fruits-api git:(main) make test
-?       github.com/dlouvier/fruits-api/src/docs [no test files]
-=== RUN   TestFruitsApi
-=== RUN   TestFruitsApi/should_return_all_fruits_in_JSON_format
-=== RUN   TestFruitsApi/should_return_a_specific_fruit_in_JSON_format
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_1
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_2
-=== RUN   TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/should_return_contain_both_fruits
---- PASS: TestFruitsApi (0.00s)
-    --- PASS: TestFruitsApi/should_return_all_fruits_in_JSON_format (0.00s)
-    --- PASS: TestFruitsApi/should_return_a_specific_fruit_in_JSON_format (0.00s)
-    --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_1 (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/current_size_should_be_2 (0.00s)
-        --- PASS: TestFruitsApi/should_add_a_fruit_(multiple_times)_while_keeping_persistency_across_requests/should_return_contain_both_fruits (0.00s)
-PASS
-coverage: 58.3% of statements
-ok      github.com/dlouvier/fruits-api/src      0.006s  coverage: 58.3% of statements
+### Run the binary
+Download the binary [the artifacts list](https://github.com/dlouvier/fruits-api/actions/runs/7239380543), unzip & `chmod +x` & run.
 
-```
+### Run directly from Makefile
+Simply type `make run` (golang v1.21.5 is required)
 
-### Run the API (requires golang installed)
-`make run`
+### Interacting with the API
+Once the program is running, the API will be available at [localhost:3000/api/fruits](http://localhost:3000/api/fruits)
+You can use `curl` or any other HTTP Client. Request needs to be set `Parameter content type: application/json`
 
-```shell
-➜  fruits-api git:(main) ✗ make run
+For an extensive list of examples, curl commands, and a live demo, visit the [Swagger UI](http://localhost:3000/swagger).
 
- ┌───────────────────────────────────────────────────┐
- │                   Fiber v2.51.0                   │
- │               http://127.0.0.1:3000               │
- │       (bound on host 0.0.0.0 and port 3000)       │
- │                                                   │
- │ Handlers ............. 7  Processes ........... 1 │
- │ Prefork ....... Disabled  PID ............ 300639 │
- └───────────────────────────────────────────────────┘
-```
+![Screenshot from 2023-12-17 16-48-18](https://github.com/dlouvier/fruits-api/assets/13359249/94859b4d-a9e0-4281-a72e-93671452d047)
+
+
+
