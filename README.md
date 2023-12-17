@@ -47,7 +47,7 @@ To build the project
 
 ### Docker
 To run the API using Docker, execute the following command:
-`docker run -p 3000:3000 ghcr.io/dlouvier/fruits_api:v0.6.0`
+`docker run -p 3000:3000 ghcr.io/dlouvier/fruits_api:v0.4.0`
 
 Note:
 - You must first authenticate with the GitHub Container Registry using docker login ghcr.io.
