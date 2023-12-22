@@ -39,10 +39,13 @@ To build the project
 
 - Makefile
 - Golang (v1.21.5)
+- [goreleaser](https://goreleaser.com/intro/)
+
+Then run `make build`
 
 ## How to start the API locally
 - Before of anything, ensure the port `3000` is free in your host (`ss -snltp | grep ':3000'`)
-- Please also notice: **I only tested in x86_64/Linux** so the docker image & binary built might not run. In that case install `golang 1.21.5` and `make run`
+- There multi-plaform builts, ensure you choose the correct one for your system (I've tested linux/amd64 & darwin/aarch64)
 - If during the use of the API any fruit is added, it will be store in a local file. This file will be automatically read the next time it starts.
 
 ### Docker

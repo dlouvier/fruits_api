@@ -15,11 +15,12 @@ default: run
 
 # Build the project and compile it in a single binary
 build:
-	@cd ./src && $(GOBUILDFLAGS) $(GOBUILD) -o $(BINARY_NAME) -v
+	@cd ./src && goreleaser --snapshot --clean
 
 # Run tests
 test:
 	@cd ./src && $(GOTEST) $(TEST_FLAGS) ./...
+	@cd ./src && goreleaser check
 
 # Run the webserver (without building)
 run:
