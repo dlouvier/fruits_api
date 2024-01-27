@@ -1,4 +1,4 @@
-package main
+package all
 
 import (
 	"bytes"
@@ -9,10 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger" // swagger handler
@@ -219,29 +216,4 @@ func Load() map[string]Fruit {
 	}
 
 	return data
-}
-
-func main() {
-	data := Load()
-	fruitsApi := New(fiber.New(), data)
-
-	go func() {
-		if err := fruitsApi.app.Listen(":3000"); err != nil {
-			log.Println(err)
-			log.Panic("Fiber failed to start")
-		}
-	}()
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	<-c
-
-	log.Println("\nGracefully shutting down...")
-	_ = fruitsApi.app.Shutdown()
-
-	log.Println("Server shutdown")
-	time.Sleep(2 * time.Second)
-
-	Save(fruitsApi.data)
 }
